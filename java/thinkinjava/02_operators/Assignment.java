@@ -12,10 +12,13 @@ public class Assignment  {
         Tank t2 = new Tank();
         t1.level = 9;
         t2.level = 47;
-        // print
+        print("1: t1.level: " + t1.level + ", t2.level = " + t2.level);
 
         t1 = t2;
-        // print
+        print("2: t1.level: " + t1.level + ", t2.level = " + t2.level);
+
+        t1.level = 27;
+        print("3: t1.level: " + t1.level + ", t2.level = " + t2.level);
 
     }   
 }
