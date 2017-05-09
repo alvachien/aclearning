@@ -1,20 +1,19 @@
 
-export class Stack {
-    public constructor() {
-
+export class Stack<T> {
+    constructor() {
     } 
     
     // Fields
-    private _items: any[] = [];
+    private _items: T[] = [];
 
     // Methods
-    public push(elements: any | any[]) {
-        this._items.push(elements);
+    public push(...elements: T[]): number {
+        return this._items.push(elements);
     }
-    public pop(): any {
+    public pop(): T {
         return this._items.pop();
     }
-    public peek(): any {
+    public peek(): T {
         if (this._items.length > 0)
             return this._items[this._items.length - 1];
         return null;

@@ -1,19 +1,19 @@
 
 export class Queue<T> {
-    public constructor() {
+    constructor() {
     }
 
     // Member
-    private _items: any[] = [];
+    private _items: T[] = [];
 
     // Methods
-    public enqueue(elements: any | any[]) {
+    public enqueue(elements: T | T[]) {
         this._items.push(elements);
     }
-    public dequeue(): any {
+    public dequeue(): T {
         return this._items.shift();
     }
-    public front(): any {
+    public front(): T {
         if (this._items.length > 0)
             return this._items[0];
         
@@ -55,8 +55,5 @@ export class QueueElement<T> {
     }
 }
 
-export class PriorityQueue extends Queue {
-    public QueueElement(element: any, priority: any) {
-
-    }
+export class PriorityQueue<T> extends Queue<T> {
 }

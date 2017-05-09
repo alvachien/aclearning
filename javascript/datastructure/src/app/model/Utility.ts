@@ -2,7 +2,7 @@ import { Stack } from './Stack';
 
 export class Utility {
   static baseConverter(value: number, base: number) : string {
-    let remStack = new Stack();
+    let remStack = new Stack<number>();
     let rem: number;
     let baseString = '';
     let digits = '0123456789ABCDEF';
@@ -19,5 +19,4 @@ export class Utility {
 
     return baseString;
   }
-
 }
