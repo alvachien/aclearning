@@ -1,4 +1,5 @@
 import { Stack } from './Stack';
+import { Queue } from './Queue';
 
 export class Utility {
   static baseConverter(value: number, base: number) : string {
@@ -18,5 +19,30 @@ export class Utility {
     }
 
     return baseString;
+  }
+
+  static hotPotato(nameList: any[], num: number): string {
+    let queue = new Queue<string>();
+    let rstString = "";
+
+    for(let i = 0; i < nameList.length; i ++) {
+      queue.enqueue(nameList[i]);
+    }
+
+    let eliminated: string = '';
+    while(queue.size() > 1) {
+      for(let i = 0; i < num; i ++) {
+        queue.enqueue(queue.dequeue());
+      }
+
+      eliminated = queue.dequeue();
+      rstString += "Eliminated: " + eliminated + `;
+      `;
+    }
+
+    rstString += "Winner is: " + queue.dequeue() + `
+      `;
+      
+    return rstString;
   }
 }

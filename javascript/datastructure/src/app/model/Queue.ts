@@ -4,10 +4,10 @@ export class Queue<T> {
     }
 
     // Member
-    private _items: T[] = [];
+    protected _items: T[] = [];
 
     // Methods
-    public enqueue(elements: T | T[]) {
+    public enqueue(elements: T) {
         this._items.push(elements);
     }
     public dequeue(): T {
@@ -55,5 +55,23 @@ export class QueueElement<T> {
     }
 }
 
-export class PriorityQueue<T> extends Queue<T> {
+export class PriorityQueue<T> extends Queue<QueueElement<T>> {
+    public enqueue(element: QueueElement<T>) {
+        if (this.isEmpty()) {
+            this._items.push(element);
+        }
+
+        let added = false;
+        for (let i = 0; i < this._items.length; i ++) {
+            if (element.Priority < this._items[i].Priority) {
+                this._items.splice(i, 0, element);
+                added = true;
+                break;
+            }
+        }
+
+        if (!added) {
+            this._items.push(element);
+        }        
+    }    
 }

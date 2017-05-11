@@ -7,7 +7,7 @@ export class Stack<T> {
     private _items: T[] = [];
 
     // Methods
-    public push(...elements: T[]): number {
+    public push(elements: T): number {
         return this._items.push(elements);
     }
     public pop(): T {
