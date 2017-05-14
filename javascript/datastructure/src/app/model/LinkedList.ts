@@ -86,12 +86,28 @@ export class LinkedList<T> {
         return false;
     }
 
-    public Remove(elem: LinkedListItem<T>) {
+    public remove(elem: T) {
+        let index = this.indexOf(elem);
+        if (index === -1)
+            return;
 
+        this.removeAt(index);
     }
 
-    public indexOf(elem: LinkedListItem<T>) : number {
-        return -1;
+    public indexOf(elem: T) : number {
+        let curr: LinkedListItem<T> = this._head;
+        let index = -1;
+
+        while(curr !== null) {
+            if (elem === curr.Element) {
+                return index;
+            }
+
+            index++;
+            curr = curr.Next;
+        }
+
+        return index;
     }
 
     public removeAt(pos: number): T {
@@ -121,10 +137,11 @@ export class LinkedList<T> {
     }
 
     public isEmpty() : boolean {
-        return false;
+        return this._length === 0;
     }
+
     public size(): number {
-        return 0;
+        return this._length;
     }
 
     public toString() : string {
