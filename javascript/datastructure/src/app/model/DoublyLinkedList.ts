@@ -45,4 +45,82 @@ export class DoublyLinkedList<T> {
     public Tail(): DoublyLinkedListItem<T> {
         return this._tail;
     }
+
+    public insert(pos: number, element: T): boolean {
+        if (pos >= 0 && pos <= this._length) {
+            let node = new DoublyLinkedListItem<T>();
+            node.Element = element;
+
+            let curr: DoublyLinkedListItem<T> = this._head;
+            let previous: DoublyLinkedListItem<T> = null;
+            let index: number = 0;
+
+            if (pos === 0) {
+                if (this._head !== null) {
+                    node.Next = this._head;
+                    curr.Previous = node;
+                    this._head = node;
+                } else {
+                    this._head = node;
+                    this._tail = node;
+                }
+            } else if(pos === this._length) {
+                curr = this._tail;
+                curr.Next = node;
+                node.Previous = curr;
+                this._tail = node;
+            } else {
+                while(index++ < pos) {
+                    previous = curr;
+                    curr = curr.Next;
+                }
+
+                node.Next = curr;
+                previous.Next = node;
+
+                curr.Previous = node;
+                node.Previous = previous;
+            }
+
+            this._length ++;
+            return true;
+        }
+
+        return false;
+    }
+
+    public removeAt(pos: number): T {
+        if (pos >= 0 && pos < this._length) {
+            let curr: DoublyLinkedListItem<T> = this._head;
+            let previous: DoublyLinkedListItem<T> = null;
+            let index: number = 0;
+
+            if (pos === 0) {
+                this._head = curr.Next;
+
+                if (this._length === 1) {
+                    this._tail = null;
+                } else {
+                    this._head.Previous = null;
+                }
+            } else if (pos === this._length - 1) {
+                curr = this._tail;
+                this._tail = curr.Previous;
+                this._tail.Next = null;
+            } else {
+                while(index++ < pos) {
+                    previous = curr;
+                    curr = curr.Next;
+                }
+
+                previous.Next = curr.Next;
+                curr.Next.Previous = previous;
+            }
+
+            this._length --;
+            return curr.Element;
+        }
+
+        return null; 
+    }
 }
