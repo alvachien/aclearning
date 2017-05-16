@@ -14,11 +14,20 @@ export class HashTable<T> {
         return hash % 37;
     }
 
+    public djb2HashCode(key: string): number {
+        let hash: number = 5381;
+        for(let i = 0; i < key.length; i++) {
+            hash = hash * 33 + key.charCodeAt(i);
+        }
+
+        return hash % 1013;
+    }
+
     public put(key: string, value: T) {
         let position = this.loseloseHashCode(key);
 
         if (this._table[position] === undefined) {
-            this._table[position] = new LinkedList<T>();
+            //this._table[position] = new LinkedList<T>();
         }
         
         this._table[position] = value;
