@@ -20,4 +20,43 @@ export class Dictionary<T> {
 
         return false;
     }
+
+    public get(key) {
+        return this.has(key)? this._items[key]: undefined;
+    }
+
+    public values() {
+        let values = [];
+        for(let k in this._items) {
+            if (this.has(k)) {
+                values.push(k);
+            }
+        }
+
+        return values;
+    }
+
+    public getItems() {
+        return this._items;
+    }
+
+    public clear(): void {
+        this._items = {};
+    }
+
+    public size(): number {
+        return Object.keys(this._items).length;
+    }
+
+    public sizeLegacy() : number {
+        let count: number = 0;
+        for (var prop in this._items) {
+            if (this._items.hasOwnProperty(prop)) {
+                ++count;
+            }            
+        }
+
+        return count;
+    }
+    
 }
