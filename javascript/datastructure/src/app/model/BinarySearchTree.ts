@@ -122,4 +122,86 @@ export class BinarySearchTree<T> {
 
         return null;
     }
+
+    public min() {
+        return this.minMode(this._root);
+    }
+
+    private maxNode(node: BinarySearchTreeNode<T>) {
+        if (node !== null) {
+            while(node && node.Right !== null) {
+                node = node.Right;
+            }
+
+            return node.Key;
+        }
+
+        return null;
+    }
+
+    public max() {
+        return this.maxNode(this._root);
+    }
+
+    private searchNode(node: BinarySearchTreeNode<T>, key: T): boolean {
+        if (node === null) {
+            return false;
+        }
+
+        if (key < node.Key) {
+            return this.searchNode(node.Left, key);
+        } else if (key > node.Key) {
+            return this.searchNode(node.Right, key);
+        } else {
+            return true;
+        }
+    }
+
+    public search(key: T) : boolean {
+        return this.searchNode(this._root, key);
+    }
+
+    private removeNode(node: BinarySearchTreeNode<T>, key: T) {
+        if (node === null) {
+            return null;
+        }
+
+        if (key < node.Key) {
+            node.Left = this.removeNode(node.Left, key);
+            return node;
+        } else if (key > node.Key) {
+            node.Right = this.removeNode(node.Right, key);
+            return node;
+        } else {
+            if (node.Left === null && node.Right === null) {
+                node = null;
+                return node;
+            }
+
+            if (node.Left === null ) {
+                node = node.Right;
+                return node;
+            } else if (node.Right === null) {
+                node = node.Left;
+                return node;
+            }
+
+            let aux = this.findMinNode(node.Right);
+            node.Key = aux.Key;
+            node.Right = this.removeNode(node.Right, aux.Key);
+            return node;
+        }
+    }
+
+    private findMinNode(node: BinarySearchTreeNode<T>) {
+        if (node !== null) {
+            while(node && node.Left !== null) {
+                node = node.Left;
+            }
+
+            return node;
+        }
+
+        return null;        
+    }
 }

@@ -6,4 +6,5 @@ export * from './Set';
 export * from './Dictionary';
 export * from './HashTable';
 export * from './BinarySearchTree';
+export * from './Graph';
 export * from './Utility';
