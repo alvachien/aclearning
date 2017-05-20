@@ -1,7 +1,7 @@
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
 
-export class Dictionary<T> {
+export class Dictionary {
     private _items = {};
 
     public has(key: any) {
@@ -57,6 +57,5 @@ export class Dictionary<T> {
         }
 
         return count;
-    }
-    
+    }    
 }
