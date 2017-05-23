@@ -7,4 +7,5 @@ export * from './Dictionary';
 export * from './HashTable';
 export * from './BinarySearchTree';
 export * from './Graph';
+export * from './Sort';
 export * from './Utility';
