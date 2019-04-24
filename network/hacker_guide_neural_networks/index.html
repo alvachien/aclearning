@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Hacker's guide to neural networks</title>
+    <base href="./">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+</head>
+
+<body>
+    <div>
+        <div>circuit with single gate: f(x, y) = xy; </div>
+        <div>
+            <labe>x = </labe>
+            <input type="number" id="singlegate_x" value="-2" readonly>
+            <label>y = </label>
+            <input type="number" id="singlegate_y" value="3" readonly>
+            <label>Tweak amount: </label>
+            <input type="number" id="singlegate_tweak" value="0.01" readonly>
+            <label>Try times:</label>
+            <input type="number" id="singlegate_times" value="200">
+            <button onclick="singleGate()">Submit</button>
+        </div>
+        <div id="singlegate_output"></div>
+    </div>
+    <script>
+        // circuit with single gate for now
+        var forwardMultiplyGate = function (x, y) { return x * y; };
+        var x = -2, y = 3; // some input values
+
+        // try changing x,y randomly small amounts and keep track of what works best
+        function singleGate() {
+            var tweak_amount = Number.parseFloat(document.getElementById("singlegate_tweak").value);
+            var best_out = -Infinity;
+            var best_x = Number.parseInt(document.getElementById("singlegate_x").value), 
+                best_y = Number.parseInt(document.getElementById("singlegate_y").value);
+            var maxtry = Number.parseInt(document.getElementById("singlegate_times").value);
+            for (var k = 0; k < maxtry; k++) {
+                var x_try = x + tweak_amount * (Math.random() * 2 - 1); // tweak x a bit
+                var y_try = y + tweak_amount * (Math.random() * 2 - 1); // tweak y a bit
+                var out = forwardMultiplyGate(x_try, y_try);
+                if (out > best_out) {
+                    // best improvement yet! Keep track of the x and y
+                    best_out = out;
+                    best_x = x_try, best_y = y_try;
+                }
+            }
+            document.getElementById("singlegate_output").innerText = 'Best output is: ' + best_out.toString() + '; '
+                + 'with x = ' + best_x.toString() + ', y = ' + best_y.toString();
+        }
+    </script>
+</body>
+
+</html>
