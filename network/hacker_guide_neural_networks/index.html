@@ -9,11 +9,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css" integrity="sha384-dbVIfZGuN1Yq7/1Ocstc1lUEm+AT+/rCkibIcC/OmWo5f0EA48Vf8CytHzGrSwbQ" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js" integrity="sha384-2BKqo+exmr9su6dir+qCw08N2ZKRucY4PrGQPPWU1A7FtlCGjmEGFqXCv5nyM5Ij" crossorigin="anonymous"></script>
 </head>
 
 <body>
     <div>
-        <div>circuit with single gate: f(x, y) = xy; </div>
+        <b>circuit with single gate: f(x, y) = xy; </b>
         <div>
             <labe>x = </labe>
             <input type="number" id="singlegate_x" value="-2" readonly>
@@ -27,17 +29,108 @@
         </div>
         <div id="singlegate_output"></div>
     </div>
+    <hr />
+    <div>
+        <b>Numerical Gradient (evaluated the gradient by probing the circuit’s output value, independently for every input)</b>
+        <div id="numgrad_format"></div>
+        <div>
+            <labe>x = </labe>
+            <input type="number" id="numgrad_x" value="-2" readonly>
+            <label>y = </label>
+            <input type="number" id="numgrad_y" value="3" readonly>
+            <label>Step size: </label>
+            <input type="number" id="numgrad_stepsize" value="0.01" readonly>
+            <label>Try times:</label>
+            <input type="number" id="numgrad_times" value="200">
+            <button onclick="numericalGradient()">Submit</button>    
+        </div>
+        <div id="numgrad_output"></div>
+    </div>
+    <hr />
+    <div>
+        <b>Analytic Gradient (use calculus to derive a direct expression for it that will be as simple to evaluate as the circuit’s output value)</b>
+        <div id="anlygrad_format"></div>
+        <div>
+            <labe>x = </labe>
+            <input type="number" id="anlygrad_x" value="-2" readonly>
+            <label>y = </label>
+            <input type="number" id="anlygrad_y" value="3" readonly>
+            <label>Step size: </label>
+            <input type="number" id="anlygrad_stepsize" value="0.01" readonly>
+            <label>Try times:</label>
+            <input type="number" id="anlygrad_times" value="200">
+            <button onclick="analyticGradient()">Submit</button>    
+        </div>
+        <div id="anlygrad_output"></div>
+    </div>
+    <hr />
+    <div>
+        <b>Circuits with Multiple Gates: f(x,y,z)=(x+y)z</b>
+        <div id="multigate_format"></div>
+        <div>
+            <div>
+                <labe>x = </labe>
+                <input type="number" id="multigate_x" value="-2" readonly>
+                <label>y = </label>
+                <input type="number" id="multigate_y" value="5" readonly>
+                <label>z = </label>
+                <input type="number" id="multigate_z" value="-4" readonly>
+                <button onclick="multiGates()">Submit</button>
+            </div>
+            <div id="multigate_output"></div>
+        </div>
+    </div>
+    <hr />
+    <div>
+        <b>Single Neuron</b>
+        <div id="singleneuron_format"></div>
+        <div>
+        </div>
+    </div>
     <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            katex.render(String.raw`\frac{\partial f(x,y)}{\partial x} = \frac{f(x+h,y) - f(x,y)}{h}`,
+            document.getElementById("numgrad_format"), {
+            throwOnError: false
+            });
+
+            katex.render(String.raw`\frac{\partial f(x,y)}{\partial x} = \frac{f(x+h,y) - f(x,y)}{h}
+            = \frac{(x+h)y - xy}{h}
+            = \frac{xy + hy - xy}{h}
+            = \frac{hy}{h}
+            = y`, document.getElementById("anlygrad_format"), {
+            throwOnError: false
+            });
+
+            katex.render(String.raw`\frac{\partial f(q,z)}{\partial x} = \frac{\partial q(x,y)}{\partial x} \frac{\partial f(q,z)}{\partial q}`,
+                document.getElementById("multigate_format"), {
+                throwOnError: false
+            });
+
+            katex.render(String.raw`f(x,y,a,b,c) = \sigma(ax + by + c); \sigma(x) = \frac{1}{1 + e^{-x}}; \frac{\partial \sigma(x)}{\partial x} = \sigma(x) (1 - \sigma(x))`,
+                document.getElementById("singleneuron_format"), {
+                throwOnError: false
+            });
+        });
+        
+
         // circuit with single gate for now
         var forwardMultiplyGate = function (x, y) { return x * y; };
-        var x = -2, y = 3; // some input values
+        var forwardAddGate = function(a, b) { return a + b; };
+        var forwardCircuit = function(x,y,z) { 
+            var q = forwardAddGate(x, y);
+            var f = forwardMultiplyGate(q, z);
+            return f;
+        };
 
         // try changing x,y randomly small amounts and keep track of what works best
         function singleGate() {
             var tweak_amount = Number.parseFloat(document.getElementById("singlegate_tweak").value);
             var best_out = -Infinity;
-            var best_x = Number.parseInt(document.getElementById("singlegate_x").value), 
-                best_y = Number.parseInt(document.getElementById("singlegate_y").value);
+            var x = Number.parseInt(document.getElementById("singlegate_x").value), 
+                y = Number.parseInt(document.getElementById("singlegate_y").value),
+                best_x = x,
+                best_y = y;
             var maxtry = Number.parseInt(document.getElementById("singlegate_times").value);
             for (var k = 0; k < maxtry; k++) {
                 var x_try = x + tweak_amount * (Math.random() * 2 - 1); // tweak x a bit
@@ -51,6 +144,102 @@
             }
             document.getElementById("singlegate_output").innerText = 'Best output is: ' + best_out.toString() + '; '
                 + 'with x = ' + best_x.toString() + ', y = ' + best_y.toString();
+        }
+        function numericalGradient() {
+            var stepsize = Number.parseFloat(document.getElementById("numgrad_stepsize").value);
+            var best_out = -Infinity;
+            var x = Number.parseInt(document.getElementById("numgrad_x").value), 
+                y = Number.parseInt(document.getElementById("numgrad_y").value),
+                best_x = x,
+                best_y = y;
+            var maxtry = Number.parseInt(document.getElementById("numgrad_times").value);
+            var out1 = forwardMultiplyGate(x, y); // -6
+            var h = 0.0001;
+
+            // compute derivative with respect to x
+            var xph = x + h; // -1.9999
+            var out2 = forwardMultiplyGate(xph, y); // -5.9997
+            var x_derivative = (out2 - out1) / h; // 3.0
+
+            // compute derivative with respect to y
+            var yph = y + h; // 3.0001
+            var out3 = forwardMultiplyGate(x, yph); // -6.0002
+            var y_derivative = (out3 - out1) / h; // -2.0
+
+            for (var k = 0; k < maxtry; k++) {
+                var x_try = x + x_derivative * (k * stepsize);
+                var y_try = y + y_derivative * (k * stepsize);
+
+                var out = forwardMultiplyGate(x_try, y_try);
+                if (out > best_out) {
+                    // best improvement yet! Keep track of the x and y
+                    best_out = out;
+                    best_x = x_try, best_y = y_try;
+                }
+            }
+            document.getElementById("numgrad_output").innerText = 'Best output is: ' + best_out.toString() + '; '
+                + 'with x = ' + best_x.toString() + ', y = ' + best_y.toString();
+        }
+        function analyticGradient() {
+            var stepsize = Number.parseFloat(document.getElementById("anlygrad_stepsize").value);
+            var best_out = -Infinity;
+            var x = Number.parseInt(document.getElementById("anlygrad_x").value), 
+                y = Number.parseInt(document.getElementById("anlygrad_y").value),
+                best_x = x,
+                best_y = y;
+            var maxtry = Number.parseInt(document.getElementById("anlygrad_times").value);
+
+            // compute derivative with respect to x
+            var x_derivative = best_y; // 3.0
+            var y_derivative = best_x; // -2.0
+
+            for (var k = 0; k < maxtry; k++) {
+                var x_try = x + x_derivative * (k * stepsize);
+                var y_try = y + y_derivative * (k * stepsize);
+
+                var out = forwardMultiplyGate(x_try, y_try);
+                if (out > best_out) {
+                    // best improvement yet! Keep track of the x and y
+                    best_out = out;
+                    best_x = x_try, best_y = y_try;
+                }
+            }
+            document.getElementById("anlygrad_output").innerText = 'Best output is: ' + best_out.toString() + '; '
+                + 'with x = ' + best_x.toString() + ', y = ' + best_y.toString();
+        }
+        function multiGates() {
+            var x = Number.parseInt(document.getElementById("multigate_x").value), 
+                y = Number.parseInt(document.getElementById("multigate_y").value),
+                z = Number.parseInt(document.getElementById("multigate_z").value);
+            var q = forwardAddGate(x, y); // q is 3
+            var f = forwardMultiplyGate(q, z); // output is -12
+
+            // gradient of the MULTIPLY gate with respect to its inputs
+            // wrt is short for "with respect to"
+            var derivative_f_wrt_z = q; // 3
+            var derivative_f_wrt_q = z; // -4
+
+            // derivative of the ADD gate with respect to its inputs
+            var derivative_q_wrt_x = 1.0;
+            var derivative_q_wrt_y = 1.0;
+
+            // chain rule
+            var derivative_f_wrt_x = derivative_q_wrt_x * derivative_f_wrt_q; // -4
+            var derivative_f_wrt_y = derivative_q_wrt_y * derivative_f_wrt_q; // -4
+
+            var gradient_f_wrt_xyz = [derivative_f_wrt_x, derivative_f_wrt_y, derivative_f_wrt_z]
+
+            // let the inputs respond to the force/tug:
+            var step_size = 0.01;
+            x = x + step_size * derivative_f_wrt_x; // -2.04
+            y = y + step_size * derivative_f_wrt_y; // 4.96
+            z = z + step_size * derivative_f_wrt_z; // -3.97
+
+            // Our circuit now better give higher output:
+            var q = forwardAddGate(x, y); // q becomes 2.92
+            var f = forwardMultiplyGate(q, z); // output is -11.59, up from -12! Nice!
+
+            document.getElementById("multigate_output").innerText = gradient_f_wrt_xyz.join(',');
         }
     </script>
 </body>
